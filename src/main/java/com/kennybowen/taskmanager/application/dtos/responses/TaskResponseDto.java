@@ -7,6 +7,7 @@ public record TaskResponseDto(
         String title,
         String description,
         Boolean completed,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }
