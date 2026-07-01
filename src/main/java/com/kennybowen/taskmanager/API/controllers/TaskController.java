@@ -5,6 +5,7 @@ import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
+import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,8 @@ public class TaskController {
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
-                        "Task List",
+                        "Retrieved Tasks",
+                        null,
                         result
                 )
         );
@@ -37,18 +39,16 @@ public class TaskController {
 
         var result = _taskService.getTaskById(id);
 
-        //System.out.println("result: "+ result);
-        if(result != null){
-            return ResponseEntity.ok(
-                    new ApiResponse<>(
-                            true,
-                            "Task retrieved successfully",
-                            result
-                    )
-            );
-        }
+        return result != null ? ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Task retrieved successfully",
+                        null,
+                        result
+                )
+        ) : ResponseEntity.notFound().build();
 
-        return ResponseEntity.notFound().build();
+
     }
 
     @PostMapping
@@ -60,6 +60,7 @@ public class TaskController {
                 new ApiResponse<>(
                         true,
                         "Task created successfully",
+                        null,
                         result
                 )
         );
@@ -69,28 +70,54 @@ public class TaskController {
     public ResponseEntity<ApiResponse<TaskResponseDto>> updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequestDto requestDto){
 
        var result = _taskService.updateTask(id, requestDto);
-       if(result != null) {
-           // return no content or updated message
-           return ResponseEntity.ok(
-                   new ApiResponse<>(
-                           true,
-                           "Task updated successfully",
-                           result
-                   )
-           );
-       }
-       return ResponseEntity.notFound().build();
+
+       return result != null ? ResponseEntity.ok(
+               new ApiResponse<>(
+                       true,
+                       "Task updated successfully",
+                       null,
+                       result
+               )
+       ): ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteTask(@PathVariable Long id) {
-        _taskService.deleteTask(id);
+        return _taskService.deleteTask(id) ?
+        ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Task deleted successfully",
+                        null,
+                        null
+                )
+        ) : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/completed/{status}")
+    public ResponseEntity<ApiResponse<List<TaskResponseDto>>> getTasksByCompletions(@PathVariable Boolean status) {
+        var result = _taskService.getTasksByCompletionStatus(status);
+        return ResponseEntity.ok(
+                new ApiResponse<>(
+                        true,
+                        "Retrieved List of completed task",
+                        null,
+                        result
+                )
+        );
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<TaskResponseDto>>> searchTasksByTitle(@RequestParam String title) {
+
+        var result = _taskService.searchTasksByTitle(title);
 
         return ResponseEntity.ok(
                 new ApiResponse<>(
                         true,
-                        "Task deleted successfully",
-                        null
+                        "Retrieved list of task by title",
+                        null,
+                        result
                 )
         );
     }

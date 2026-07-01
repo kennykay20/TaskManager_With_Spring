@@ -12,5 +12,7 @@ public interface TaskService {
     TaskResponseDto createTask(CreateTaskRequestDto requestDto);
     TaskResponseDto getTaskById(Long id);
     TaskResponseDto updateTask(Long id, UpdateTaskRequestDto requestDto);
-    void deleteTask(Long id);
+    boolean deleteTask(Long id);
+    List<TaskResponseDto> getTasksByCompletionStatus(Boolean status);
+    List<TaskResponseDto> searchTasksByTitle(String title);
 }
