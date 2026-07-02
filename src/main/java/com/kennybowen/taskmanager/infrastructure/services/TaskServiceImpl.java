@@ -35,8 +35,8 @@ public class TaskServiceImpl implements TaskService {
         Task task = new Task();
         task.setTitle(requestDto.title());
         task.setDescription(requestDto.description());
-        task.setCompleted(false);
-        task.setCreatedAt(LocalDateTime.now());
+        task.setCompleted(requestDto.completed() != null ? requestDto.completed() : false);
+        //task.setCreatedAt(LocalDateTime.now());
 
         Task savedTask = _taskRepository.save(task);
         return taskMapper.toDto(savedTask);
@@ -55,9 +55,9 @@ public class TaskServiceImpl implements TaskService {
         Task task = _taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(id, "Task"));
 
-        task.setTitle(requestDto.title());
-        task.setDescription(requestDto.description());
-        task.setCompleted(requestDto.completed());
+        task.setTitle(requestDto.title() != null ? requestDto.title() : task.getTitle());
+        task.setDescription(requestDto.description() != null ? requestDto.description() : task.getDescription());
+        task.setCompleted(requestDto.completed() != null ? requestDto.completed() : task.getCompleted());
         task.setUpdatedAt(LocalDateTime.now());
 
         Task updatedTask = _taskRepository.save(task);

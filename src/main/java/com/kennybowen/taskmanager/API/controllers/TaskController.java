@@ -6,6 +6,7 @@ import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto
 import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
 import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +53,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<TaskResponseDto>> createTask(@RequestBody CreateTaskRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<TaskResponseDto>> createTask(@Valid @RequestBody CreateTaskRequestDto requestDto) {
 
         var result = _taskService.createTask(requestDto);
 
@@ -67,7 +68,7 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<TaskResponseDto>> updateTask(@PathVariable Long id, @RequestBody UpdateTaskRequestDto requestDto){
+    public ResponseEntity<ApiResponse<TaskResponseDto>> updateTask(@PathVariable Long id, @Valid @RequestBody UpdateTaskRequestDto requestDto){
 
        var result = _taskService.updateTask(id, requestDto);
 
