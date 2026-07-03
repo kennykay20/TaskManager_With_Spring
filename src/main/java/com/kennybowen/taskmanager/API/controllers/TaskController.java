@@ -3,11 +3,16 @@ package com.kennybowen.taskmanager.API.controllers;
 import com.kennybowen.taskmanager.application.contracts.services.TaskService;
 import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
+import com.kennybowen.taskmanager.application.dtos.responses.ApiListPageResponseDto;
 import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
+import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
 import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +36,38 @@ public class TaskController {
                         "Retrieved Tasks",
                         null,
                         result
+                )
+        );
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<ApiListPageResponseDto<List<TaskResponseDto>>> getAllTaskByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir
+    ){
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC") ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        PagedResult<TaskResponseDto> result = _taskService.getAllTask(pageable);
+
+
+        return ResponseEntity.ok(
+                new ApiListPageResponseDto<>(
+                        true,
+                        "Retrieved Tasks in a pagination",
+                        null,
+                        result.pageNumber(),
+                        result.pageSize(),
+                        result.items().size(),
+                        result.totalPages(),
+                        (int) result.totalCount(),
+                        result.hasNext(),
+                        result.hasPrevious(),
+                        result.items()
                 )
         );
     }

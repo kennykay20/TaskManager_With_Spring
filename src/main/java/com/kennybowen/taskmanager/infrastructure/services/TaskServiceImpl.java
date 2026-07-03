@@ -4,12 +4,16 @@ import com.kennybowen.taskmanager.application.contracts.services.TaskService;
 import com.kennybowen.taskmanager.application.dtos.mapper.TaskMapper;
 import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
+import com.kennybowen.taskmanager.application.dtos.responses.ApiListPageResponseDto;
+import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
 import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
 import com.kennybowen.taskmanager.domain.entities.Task;
 import com.kennybowen.taskmanager.infrastructure.persistences.repositories.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,6 +31,23 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponseDto> getAllTask() {
         return taskMapper.toListDto(
                 _taskRepository.findAll()
+        );
+    }
+
+    @Override
+    public PagedResult<TaskResponseDto> getAllTask(Pageable pageable) {
+        Page<Task> page = _taskRepository.findAll(pageable);
+        return new PagedResult<>(
+                page.getContent()
+                        .stream()
+                        .map(taskMapper::toDto)
+                        .toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
         );
     }
 
