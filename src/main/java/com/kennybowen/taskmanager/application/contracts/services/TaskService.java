@@ -19,6 +19,9 @@ public interface TaskService {
     TaskResponseDto getTaskById(Long id);
     TaskResponseDto updateTask(Long id, UpdateTaskRequestDto requestDto);
     boolean deleteTask(Long id);
-    List<TaskResponseDto> getTasksByCompletionStatus(Boolean status);
+    List<TaskResponseDto> getTasksByCompletionStatus(Boolean completed);
     List<TaskResponseDto> searchTasksByTitle(String title);
+    PagedResult<TaskResponseDto> searchTasksByTitleAndCompletion(String title, Boolean completed, Pageable pageable);
+    PagedResult<TaskResponseDto> searchTasksByTitle(String title, Pageable pageable);
+    PagedResult<TaskResponseDto> getTasksByCompletion(Boolean completed, Pageable pageable);
 }

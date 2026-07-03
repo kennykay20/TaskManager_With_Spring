@@ -13,7 +13,9 @@ import com.kennybowen.taskmanager.infrastructure.persistences.repositories.TaskR
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -106,5 +108,57 @@ public class TaskServiceImpl implements TaskService {
     public List<TaskResponseDto> searchTasksByTitle(String title) {
         var result = _taskRepository.findByTitleContainingIgnoreCase(title);
         return taskMapper.toListDto(result);
+    }
+
+    @Override
+    public PagedResult<TaskResponseDto> searchTasksByTitleAndCompletion(String title, Boolean completed, Pageable pageable) {
+
+        Page<Task> page = _taskRepository.findAllByTitleContainingAndCompleted(title, completed, pageable);
+        return new PagedResult<>(
+                page.getContent()
+                        .stream()
+                        .map(taskMapper::toDto)
+                        .toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+    }
+
+    @Override
+    public PagedResult<TaskResponseDto> searchTasksByTitle(String title, Pageable pageable) {
+        Page<Task> page = _taskRepository.findByTitleContainingIgnoreCase(title, pageable);
+        return new PagedResult<>(
+                page.getContent()
+                        .stream()
+                        .map(taskMapper::toDto)
+                        .toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+    }
+
+    @Override
+    public PagedResult<TaskResponseDto> getTasksByCompletion(Boolean completed, Pageable pageable) {
+        Page<Task> page = _taskRepository.findByCompleted(completed, pageable);
+        return new PagedResult<>(
+                page.getContent()
+                        .stream()
+                        .map(taskMapper::toDto)
+                        .toList(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
     }
 }

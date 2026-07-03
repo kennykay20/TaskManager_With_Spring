@@ -145,7 +145,8 @@ public class TaskController {
         );
     }
 
-    @GetMapping("/search")
+    // Filtering by title without pagination
+    @GetMapping("/search/title")
     public ResponseEntity<ApiResponse<List<TaskResponseDto>>> searchTasksByTitle(@RequestParam String title) {
 
         var result = _taskService.searchTasksByTitle(title);
@@ -156,6 +157,55 @@ public class TaskController {
                         "Retrieved list of task by title",
                         null,
                         result
+                )
+        );
+    }
+
+    // Filtering by title, completed in pagination list
+    @GetMapping("/search")
+    public ResponseEntity<ApiListPageResponseDto<List<TaskResponseDto>>> searchTasks(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Boolean completed,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir
+    ){
+
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC") ?
+                Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        PagedResult<TaskResponseDto> result;
+
+        if(title != null && completed != null) {
+            result = _taskService.searchTasksByTitleAndCompletion(title, completed, pageable);
+        }
+        else if (title != null){
+            // filter by title only
+            result = _taskService.searchTasksByTitle(title, pageable);
+        }
+        else if(completed != null){
+            result = _taskService.getTasksByCompletion(completed, pageable);
+        }
+        else {
+            result = _taskService.getAllTask(pageable);
+        }
+
+        return ResponseEntity.ok(
+                new ApiListPageResponseDto<>(
+                        true,
+                        "Retrieved Tasks in a pagination",
+                        null,
+                        result.pageNumber(),
+                        result.pageSize(),
+                        result.items().size(),
+                        result.totalPages(),
+                        (int) result.totalCount(),
+                        result.hasNext(),
+                        result.hasPrevious(),
+                        result.items()
                 )
         );
     }
