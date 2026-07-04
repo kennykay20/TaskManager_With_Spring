@@ -1,32 +1,28 @@
 package com.kennybowen.taskmanager.domain.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.mapstruct.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tasks")
-@Getter// gives us the getter and setter
-@Setter
-@NoArgsConstructor // no constructor
-@AllArgsConstructor //
-//@Builder
-public class Task {
+@Table(name = "categories")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String title;
+    @Column(nullable = false, unique = true)
+    private String name;
 
-    @Column(length = 500)
+    @Column(length = 225)
     private String description;
-
-    @Column(nullable = false)
-    private Boolean completed = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -34,12 +30,9 @@ public class Task {
     @Column(name = "updated_at", nullable = true)
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
 }

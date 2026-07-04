@@ -1,21 +1,23 @@
 package com.kennybowen.taskmanager.infrastructure.services;
 
+import com.kennybowen.taskmanager.application.contracts.services.CategoryService;
 import com.kennybowen.taskmanager.application.contracts.services.TaskService;
+import com.kennybowen.taskmanager.application.dtos.mapper.CategoryMapper;
 import com.kennybowen.taskmanager.application.dtos.mapper.TaskMapper;
 import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
-import com.kennybowen.taskmanager.application.dtos.responses.ApiListPageResponseDto;
+import com.kennybowen.taskmanager.application.dtos.responses.CategoryResponseDto;
 import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
 import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
+import com.kennybowen.taskmanager.domain.entities.Category;
 import com.kennybowen.taskmanager.domain.entities.Task;
+import com.kennybowen.taskmanager.infrastructure.persistences.repositories.CategoryRepository;
 import com.kennybowen.taskmanager.infrastructure.persistences.repositories.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,7 +29,8 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository _taskRepository;
     private final TaskMapper taskMapper;
-
+    private final CategoryRepository _categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public List<TaskResponseDto> getAllTask() {
@@ -55,13 +58,23 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskResponseDto createTask(CreateTaskRequestDto requestDto) {
+
+        Category category = null;
+        if(requestDto != null && requestDto.categoryId() != null)
+        {
+            category = _categoryRepository.findById(
+                            requestDto.categoryId())
+                    .orElseThrow(() ->
+                            new NotFoundException(requestDto.categoryId(), "Category"));
+        }
         Task task = new Task();
         task.setTitle(requestDto.title());
         task.setDescription(requestDto.description());
         task.setCompleted(requestDto.completed() != null ? requestDto.completed() : false);
-        //task.setCreatedAt(LocalDateTime.now());
+        task.setCategory(category);
 
         Task savedTask = _taskRepository.save(task);
+
         return taskMapper.toDto(savedTask);
     }
 

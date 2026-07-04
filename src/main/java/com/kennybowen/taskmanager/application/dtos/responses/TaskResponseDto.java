@@ -1,5 +1,7 @@
 package com.kennybowen.taskmanager.application.dtos.responses;
 
+import com.kennybowen.taskmanager.domain.entities.Category;
+
 import java.time.LocalDateTime;
 
 public record TaskResponseDto(
@@ -8,6 +10,7 @@ public record TaskResponseDto(
         String description,
         Boolean completed,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        CategoryResponseDto category
 ) {
 }

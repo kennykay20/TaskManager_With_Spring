@@ -7,7 +7,6 @@ import com.kennybowen.taskmanager.application.dtos.responses.ApiListPageResponse
 import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
 import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
-import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
