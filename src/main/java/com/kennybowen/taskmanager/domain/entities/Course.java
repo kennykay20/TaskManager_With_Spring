@@ -4,18 +4,17 @@ import com.kennybowen.taskmanager.domain.entities.CommonEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
-@Table(name = "categories")
-@Getter
+@Table(name = "courses")
+@Getter// gives us the getter and setter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category extends BaseEntity {
+public class Course extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
-    private String name;
+    @Column(nullable = false, length = 100)
+    private String title;
 
-    @Column(length = 225)
+    @Column(length = 400)
     private String description;
 }

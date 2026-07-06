@@ -1,5 +1,6 @@
 package com.kennybowen.taskmanager.domain.entities;
 
+import com.kennybowen.taskmanager.domain.entities.CommonEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.mapstruct.Builder;
@@ -13,11 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor // no constructor
 @AllArgsConstructor //
 //@Builder
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Task extends BaseEntity {
 
     @Column(nullable = false)
     private String title;
@@ -28,18 +25,7 @@ public class Task {
     @Column(nullable = false)
     private Boolean completed = false;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at", nullable = true)
-    private LocalDateTime updatedAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
 }
