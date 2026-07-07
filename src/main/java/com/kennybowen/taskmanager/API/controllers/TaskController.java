@@ -34,7 +34,8 @@ public class TaskController {
                         true,
                         "Retrieved Tasks",
                         null,
-                        result
+                        result,
+                        null
                 )
         );
     }
@@ -81,7 +82,8 @@ public class TaskController {
                         true,
                         "Task retrieved successfully",
                         null,
-                        result
+                        result,
+                        result.id()
                 )
         ) : ResponseEntity.notFound().build();
 
@@ -98,7 +100,8 @@ public class TaskController {
                         true,
                         "Task created successfully",
                         null,
-                        result
+                        result,
+                        result.id()
                 )
         );
     }
@@ -113,7 +116,8 @@ public class TaskController {
                        true,
                        "Task updated successfully",
                        null,
-                       result
+                       result,
+                       result.id()
                )
        ): ResponseEntity.notFound().build();
     }
@@ -126,7 +130,8 @@ public class TaskController {
                         true,
                         "Task deleted successfully",
                         null,
-                        null
+                        null,
+                        id
                 )
         ) : ResponseEntity.notFound().build();
     }
@@ -139,7 +144,8 @@ public class TaskController {
                         true,
                         "Retrieved List of completed task",
                         null,
-                        result
+                        result,
+                        null
                 )
         );
     }
@@ -155,7 +161,8 @@ public class TaskController {
                         true,
                         "Retrieved list of task by title",
                         null,
-                        result
+                        result,
+                        null
                 )
         );
     }

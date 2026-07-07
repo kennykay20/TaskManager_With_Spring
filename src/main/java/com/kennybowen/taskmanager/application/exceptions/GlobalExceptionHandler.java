@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
                         false,
                         ex.getMessage(),
                         null,
+                        null,
                         null
                 )
         );
@@ -33,7 +34,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ApiResponse<>(
                         false,
-                        "An unexception error occurred " + ex.getMessage(),
+                        "An unexceptional error occurred " + ex.getMessage(),
+                        null,
                         null,
                         null
                 )
@@ -56,6 +58,7 @@ public class GlobalExceptionHandler {
                     false,
                     "Validation failed",
                     errorList,
+                    null,
                     null
             )
         );

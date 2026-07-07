@@ -14,10 +14,10 @@ import lombok.*;
 @AllArgsConstructor
 public class Author extends BaseEntity {
 
-    @Column(length = 100)
+    @Column(length = 50)
     private String firstName;
 
-    @Column(length = 100)
+    @Column(length = 50)
     private String lastName;
 
     @Column

@@ -2,11 +2,12 @@ package com.kennybowen.taskmanager.application.dtos.responses;
 
 import java.util.List;
 
-public record ApiResponse<T>(
-        Boolean success,
+public record TokenResponseDto(
+        Integer id,
+        boolean success,
         String message,
         List<String> errors,
-        T data,
-        Long id
+        String accessToken,
+        String refreshToken
 ) {
 }

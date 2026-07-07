@@ -1,12 +1,10 @@
 package com.kennybowen.taskmanager.infrastructure.services;
 
-import com.kennybowen.taskmanager.application.contracts.services.CategoryService;
 import com.kennybowen.taskmanager.application.contracts.services.TaskService;
 import com.kennybowen.taskmanager.application.dtos.mapper.CategoryMapper;
 import com.kennybowen.taskmanager.application.dtos.mapper.TaskMapper;
 import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
-import com.kennybowen.taskmanager.application.dtos.responses.CategoryResponseDto;
 import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
 import com.kennybowen.taskmanager.application.exceptions.NotFoundException;

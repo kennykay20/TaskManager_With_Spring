@@ -27,7 +27,8 @@ public class CategoryController {
                         true,
                         "Category retrieved successfully",
                         null,
-                        result
+                        result,
+                        result.categoryId()
                 )
         ) : ResponseEntity.notFound().build();
     }
@@ -42,7 +43,8 @@ public class CategoryController {
                         true,
                         "Category created successfully",
                         null,
-                        result
+                        result,
+                        result.categoryId()
                 )
         );
     }
