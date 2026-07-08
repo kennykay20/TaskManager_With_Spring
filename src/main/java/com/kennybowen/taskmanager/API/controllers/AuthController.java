@@ -40,7 +40,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<TokenResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
         var result = userService.loginUser(requestDto);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.status(HttpStatus.OK).body(
                 new ApiResponse<>(
                         true,
                         result.message(),
