@@ -4,7 +4,7 @@ import com.kennybowen.taskmanager.application.contracts.services.CategoryService
 import com.kennybowen.taskmanager.application.dtos.mapper.CategoryMapper;
 import com.kennybowen.taskmanager.application.dtos.requests.CreateCategoryRequestDto;
 import com.kennybowen.taskmanager.application.dtos.responses.CategoryResponseDto;
-import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
+import com.kennybowen.taskmanager.application.exceptions.NotFoundExceptionById;
 import com.kennybowen.taskmanager.domain.entities.Category;
 import com.kennybowen.taskmanager.infrastructure.persistences.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponseDto findById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Category"));
+                .orElseThrow(() -> new NotFoundExceptionById(id, "Category"));
 
         return categoryMapper.toDto(category);
     }

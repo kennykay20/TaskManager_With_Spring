@@ -25,7 +25,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<UserResponseDto>> register(@Valid @RequestBody RegisterUserRequestDto requestDto) {
         var result = userService.registerUser(requestDto);
-        return result.id() != null ? ResponseEntity.status(HttpStatus.CREATED).body(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponse<>(
                         true,
                         result.message(),
@@ -33,13 +33,14 @@ public class AuthController {
                         null,
                         result.id()
                 )
-        ): ResponseEntity.badRequest().build();
+        );
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<TokenResponseDto>> login(@Valid @RequestBody LoginRequestDto requestDto) {
         var result = userService.loginUser(requestDto);
-        return result.id() != null ? ResponseEntity.status(HttpStatus.CREATED).body(
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 new ApiResponse<>(
                         true,
                         result.message(),
@@ -47,7 +48,7 @@ public class AuthController {
                         result,
                         result.id().longValue()
                 )
-        ): ResponseEntity.badRequest().build();
+        );
     }
 
 }

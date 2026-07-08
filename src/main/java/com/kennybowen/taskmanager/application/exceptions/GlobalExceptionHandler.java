@@ -1,6 +1,7 @@
 package com.kennybowen.taskmanager.application.exceptions;
 
 import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
+import com.kennybowen.taskmanager.application.exceptions.common.BusinessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -14,14 +15,14 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ApiResponse<String>> handleNotFoundException(NotFoundException ex, WebRequest request) {
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiResponse<String>> handleBusinessException(BadRequestException ex, WebRequest request) {
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+        return ResponseEntity.status(ex.getStatus()).body(
                 new ApiResponse<>(
                         false,
                         ex.getMessage(),
-                        null,
+                        List.of(ex.getMessage()),
                         null,
                         null
                 )
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new ApiResponse<>(
                         false,
-                        "An unexceptional error occurred " + ex.getMessage(),
+                        "An unexceptional error occurred ",
                         null,
                         null,
                         null

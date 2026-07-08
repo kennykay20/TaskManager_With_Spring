@@ -7,7 +7,7 @@ import com.kennybowen.taskmanager.application.dtos.requests.CreateTaskRequestDto
 import com.kennybowen.taskmanager.application.dtos.requests.UpdateTaskRequestDto;
 import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TaskResponseDto;
-import com.kennybowen.taskmanager.application.exceptions.NotFoundException;
+import com.kennybowen.taskmanager.application.exceptions.NotFoundExceptionById;
 import com.kennybowen.taskmanager.domain.entities.Category;
 import com.kennybowen.taskmanager.domain.entities.Task;
 import com.kennybowen.taskmanager.infrastructure.persistences.repositories.CategoryRepository;
@@ -63,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
             category = _categoryRepository.findById(
                             requestDto.categoryId())
                     .orElseThrow(() ->
-                            new NotFoundException(requestDto.categoryId(), "Category"));
+                            new NotFoundExceptionById(requestDto.categoryId(), "Category"));
         }
         Task task = new Task();
         task.setTitle(requestDto.title());
@@ -79,7 +79,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto getTaskById(Long id) {
         Task task = _taskRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Task"));
+                .orElseThrow(() -> new NotFoundExceptionById(id, "Task"));
 
         return taskMapper.toDto(task);
     }
@@ -87,7 +87,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto updateTask(Long id, UpdateTaskRequestDto requestDto) {
         Task task = _taskRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(id, "Task"));
+                .orElseThrow(() -> new NotFoundExceptionById(id, "Task"));
 
         task.setTitle(requestDto.title() != null ? requestDto.title() : task.getTitle());
         task.setDescription(requestDto.description() != null ? requestDto.description() : task.getDescription());

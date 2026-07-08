@@ -4,6 +4,8 @@ import com.kennybowen.taskmanager.domain.entities.CommonEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "courses")
 @Getter// gives us the getter and setter
@@ -17,4 +19,19 @@ public class Course extends BaseEntity {
 
     @Column(length = 400)
     private String description;
+
+    @ManyToMany // course is the owner of the relationship
+    @JoinTable(
+        name = "authors_courses",
+        joinColumns = {
+            @JoinColumn(name = "course_id")
+        },
+        inverseJoinColumns = {
+            @JoinColumn(name = "author_id")
+        }
+    )
+    private List<Author> authors;
+
+    @OneToMany(mappedBy = "course")
+    private List<Section> sections;
 }

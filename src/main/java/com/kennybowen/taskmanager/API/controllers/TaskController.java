@@ -77,7 +77,7 @@ public class TaskController {
 
         var result = _taskService.getTaskById(id);
 
-        return result != null ? ResponseEntity.ok(
+        return ResponseEntity.ok().body(
                 new ApiResponse<>(
                         true,
                         "Task retrieved successfully",
@@ -85,9 +85,7 @@ public class TaskController {
                         result,
                         result.id()
                 )
-        ) : ResponseEntity.notFound().build();
-
-
+        );
     }
 
     @PostMapping
@@ -111,7 +109,7 @@ public class TaskController {
 
        var result = _taskService.updateTask(id, requestDto);
 
-       return result != null ? ResponseEntity.ok(
+       return ResponseEntity.ok().body(
                new ApiResponse<>(
                        true,
                        "Task updated successfully",
@@ -119,21 +117,21 @@ public class TaskController {
                        result,
                        result.id()
                )
-       ): ResponseEntity.notFound().build();
+       );
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteTask(@PathVariable Long id) {
-        return _taskService.deleteTask(id) ?
-        ResponseEntity.ok(
+        var isDeleted = _taskService.deleteTask(id);
+        return ResponseEntity.ok().body(
                 new ApiResponse<>(
-                        true,
-                        "Task deleted successfully",
+                        isDeleted,
+                        isDeleted ? "Task deleted successfully" : "Task not deleted successfully",
                         null,
                         null,
                         id
                 )
-        ) : ResponseEntity.notFound().build();
+        );
     }
 
     @GetMapping("/completed/{status}")

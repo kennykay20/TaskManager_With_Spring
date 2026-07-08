@@ -3,8 +3,11 @@ package com.kennybowen.taskmanager.domain.entities;
 import com.kennybowen.taskmanager.domain.entities.CommonEntity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "authors")
@@ -25,4 +28,7 @@ public class Author extends BaseEntity {
 
     @Column
     private Integer age;
+
+    @ManyToMany(mappedBy = "authors") // author is the reverse while course entity is the owner of the relationship
+    private List<Course> courses;
 }

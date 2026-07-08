@@ -22,7 +22,7 @@ public class CategoryController {
     public ResponseEntity<ApiResponse<CategoryResponseDto>> findById(@PathVariable Long id) {
         var result = categoryService.findById(id);
 
-        return result != null ? ResponseEntity.ok(
+        return ResponseEntity.ok().body(
                 new ApiResponse<>(
                         true,
                         "Category retrieved successfully",
@@ -30,7 +30,8 @@ public class CategoryController {
                         result,
                         result.categoryId()
                 )
-        ) : ResponseEntity.notFound().build();
+        );
+
     }
 
     @PostMapping

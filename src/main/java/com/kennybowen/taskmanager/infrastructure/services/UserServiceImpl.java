@@ -8,10 +8,13 @@ import com.kennybowen.taskmanager.application.dtos.responses.ApiResponse;
 import com.kennybowen.taskmanager.application.dtos.responses.PagedResult;
 import com.kennybowen.taskmanager.application.dtos.responses.TokenResponseDto;
 import com.kennybowen.taskmanager.application.dtos.responses.UserResponseDto;
+import com.kennybowen.taskmanager.application.exceptions.BadRequestException;
+import com.kennybowen.taskmanager.application.exceptions.NotFoundExceptionWithEmail;
 import com.kennybowen.taskmanager.domain.entities.User;
 import com.kennybowen.taskmanager.infrastructure.persistences.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository _userRepository;
@@ -36,19 +40,13 @@ public class UserServiceImpl implements UserService {
     public ApiResponse<UserResponseDto> registerUser(RegisterUserRequestDto requestDto) {
         var email = requestDto.email();
         var password = requestDto.password();
-        ApiResponse<UserResponseDto> response = null;
-        User user = null;
+        ApiResponse<UserResponseDto> response;
+        User user;
         var emailExist = _userRepository.findByEmail(email);
-        if (emailExist != null)
+
+        if (emailExist.isPresent())
         {
-            response = new ApiResponse<>(
-                    false,
-                    "Email already exist",
-                    null,
-                    null,
-                    null
-            );
-            return  response;
+            throw new BadRequestException("Email already exist");
         }
 
         // generate a salt or hashPassword
@@ -63,9 +61,9 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = _userRepository.save(user);
 
-
         // update the audit table
 
+        // return a response
         response = new ApiResponse<>(
                 true,
                 "New user registered successfully",
@@ -79,104 +77,64 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public TokenResponseDto loginUser(LoginRequestDto requestDto) {
-        TokenResponseDto response = null;
+        TokenResponseDto response;
         var email = requestDto.email();
         var password = requestDto.password();
-        Long userId = null;
+        Long userId;
         var isMatch = false;
 
-        try
-        {
-            var user = _userRepository.findByEmail(email);
-            if (user == null) {
+        var user = _userRepository.findByEmail(email).
+                orElseThrow(() -> new NotFoundExceptionWithEmail("User not found, Please sign up or register."));
 
-                // audit log failed login
-                response = new TokenResponseDto(
-                       null,
-                       false,
-                       "User not found, Please sign up or register.",
-                       null,
-                        null,
-                        ""
-                );
-                return response;
+        userId = user.getId();
+
+        log.info("Is user active {} , with email {}", user.getIsActive(), user.getEmail());
+        System.out.println("Is user active " + user.getIsActive() + ", email = " + user.getEmail());
+
+        if(!user.getIsActive()){
+            if(user.getIsNewUser()) {
+                throw new BadRequestException("Account not verified, Please check your email for verification link.");
             }
 
-            userId = user.getId();
-
-            System.out.println("Is user active " + user.getIsActive() + ", email = " + user.getEmail());
-
-            if(!user.getIsActive()){
-
-                if(user.getIsNewUser()) {
-                    response = new TokenResponseDto(
-                            null,
-                            false,
-                            "Account not verified, Please check your email for verification link.",
-                            null,
-                            "",
-                            ""
-                    );
-                    return response;
-                }
-                else {
-                    System.out.println("Email " + user.getEmail() + " has been deactivated!");
-                    response = new TokenResponseDto(
-                            null,
-                            false,
-                            "User has been de-activated.",
-                            null,
-                            "",
-                            ""
-                    );
-                    return response;
-                }
-            }
-
-            // confirm is password match
-            var hashPassword = user.getPassword();
-            if (!hashPassword.isEmpty()) {
-                isMatch = passwordService.verifyPassword(password, hashPassword);
-            }
-
-            System.out.println("is login password match " + isMatch);
-            if(!isMatch) {
-                System.out.println("Invalid login password");
-                response = new TokenResponseDto(
-                        null,
-                        false,
-                        "Invalid login password",
-                        null,
-                        "",
-                        ""
-                );
-                return response;
-            }
-
-            // call the audit service
-
-            // generate an access token by user id
-            //var token = generateAccessToken(userId);
-            //user.setRegistrationToken(token);
-            // update the token for user
-
-            // generate a new refreshToken by userId
-
-            System.out.println("User id = " + userId);
-            // call the audit service for successfulLogin
-
-            return response = new TokenResponseDto(
-                    userId.intValue(),
-                   true,
-                   "Login successfully",
-                   null,
-                   "",
-                   ""
-            );
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.info("Email {} has been deactivated.", user.getEmail());
+            throw new BadRequestException("User has been de-activated.");
         }
+
+        // confirm is password match
+        var hashPassword = user.getPassword();
+        if (!hashPassword.isEmpty()) {
+            isMatch = passwordService.verifyPassword(password, hashPassword);
+        }
+
+        System.out.println("is login password match " + isMatch);
+        if(!isMatch) {
+            System.out.println("Invalid login password");
+            log.info("Invalid login password");
+            throw new BadRequestException("Invalid login password");
+        }
+
+        // call the audit service
+
+        // generate an access token by user id
+        //var token = generateAccessToken(userId);
+        //user.setRegistrationToken(token);
+        // update the token column for user
+
+        // generate a new refreshToken by userId
+
+        System.out.println("User id = " + userId);
+        // call the audit service for successfulLogin
+
+        response = new TokenResponseDto(
+                userId.intValue(),
+                true,
+                "Login successfully",
+                null,
+                "",
+                ""
+        );
+
+        return response;
 
     }
 
